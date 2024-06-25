@@ -17,7 +17,7 @@ function Home() {
             </Typography>
             <Stack direction={'row'} spacing={5} mt={5}>
                 <Button variant='contained' sx={{ paddingX: '3rem', textTransform: 'capitalize' }} onClick={() => navigate('/login')}> Sign In</Button>
-                <Button variant='contained' color='secondary' sx={{ paddingX: '3rem', textTransform: 'capitalize' }}> Sign Up</Button>
+                <Button variant='contained' color='secondary' sx={{ paddingX: '3rem', textTransform: 'capitalize' }} onClick={() => navigate('/signup')}> Sign Up</Button>
             </Stack>
         </Box>
     )
