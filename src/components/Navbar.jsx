@@ -1,158 +1,202 @@
-import * as React from 'react'
-import { styled, useTheme } from '@mui/material/styles'
+import React, { useState } from 'react'
+import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
-import Drawer from '@mui/material/Drawer'
 import CssBaseline from '@mui/material/CssBaseline'
-import MuiAppBar from '@mui/material/AppBar'
-import Toolbar from '@mui/material/Toolbar'
-import List from '@mui/material/List'
-import Typography from '@mui/material/Typography'
 import Divider from '@mui/material/Divider'
+import Drawer from '@mui/material/Drawer'
 import IconButton from '@mui/material/IconButton'
-import MenuIcon from '@mui/icons-material/Menu'
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft'
-import ChevronRightIcon from '@mui/icons-material/ChevronRight'
+import List from '@mui/material/List'
 import ListItem from '@mui/material/ListItem'
 import ListItemButton from '@mui/material/ListItemButton'
 import ListItemIcon from '@mui/material/ListItemIcon'
 import ListItemText from '@mui/material/ListItemText'
-import InboxIcon from '@mui/icons-material/MoveToInbox'
-import MailIcon from '@mui/icons-material/Mail'
+import MenuIcon from '@mui/icons-material/Menu'
+import Toolbar from '@mui/material/Toolbar'
 import SearchBar from './SearchBar'
+import ExitToAppIcon from '@mui/icons-material/ExitToApp'
+import EventIcon from '@mui/icons-material/Event'
+import HomeIcon from '@mui/icons-material/Home'
+import AddIcCallIcon from '@mui/icons-material/AddIcCall'
+import DescriptionIcon from '@mui/icons-material/Description'
+import WidgetsIcon from '@mui/icons-material/Widgets'
+import SettingsIcon from '@mui/icons-material/Settings'
+import { useNavigate } from 'react-router-dom'
+import { Avatar, Stack, Typography } from '@mui/material'
+import mama from '../assets/eternal-bond-mothers-day-logo-cherished-connection-iconic-mother-child_706143-58681.avif'
+import user from '../assets/portrait-non-traditional-family-with-single-mother_23-2151295325.jpg'
+import ContactSupportIcon from '@mui/icons-material/ContactSupport'
+import NotificationsIcon from '@mui/icons-material/Notifications'
 
 const drawerWidth = 240
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })(
-    ({ theme, open }) => ({
-        flexGrow: 1,
-        padding: theme.spacing(3),
-        transition: theme.transitions.create('margin', {
-            easing: theme.transitions.easing.sharp,
-            duration: theme.transitions.duration.leavingScreen,
-        }),
-        marginLeft: `-${drawerWidth}px`,
-        ...(open && {
-            transition: theme.transitions.create('margin', {
-                easing: theme.transitions.easing.easeOut,
-                duration: theme.transitions.duration.enteringScreen,
-            }),
-            marginLeft: 0,
-        }),
-    }),
-)
-
-const AppBar = styled(MuiAppBar, {
-    shouldForwardProp: (prop) => prop !== 'open',
-})(({ theme, open }) => ({
-    transition: theme.transitions.create(['margin', 'width'], {
-        easing: theme.transitions.easing.sharp,
-        duration: theme.transitions.duration.leavingScreen,
-    }),
-    ...(open && {
-        width: `calc(100% - ${drawerWidth}px)`,
-        marginLeft: `${drawerWidth}px`,
-        transition: theme.transitions.create(['margin', 'width'], {
-            easing: theme.transitions.easing.easeOut,
-            duration: theme.transitions.duration.enteringScreen,
-        }),
-    }),
-}))
-
-const DrawerHeader = styled('div')(({ theme }) => ({
-    display: 'flex',
-    alignItems: 'center',
-    padding: theme.spacing(0, 1),
-    // necessary for content to be below app bar
-    ...theme.mixins.toolbar,
-    justifyContent: 'flex-end',
-}))
 function Navbar({ children }) {
-
-    const theme = useTheme()
-    const [open, setOpen] = React.useState(false)
-
-    const handleDrawerOpen = () => {
-        setOpen(true)
-    }
+    const [mobileOpen, setMobileOpen] = useState(false)
+    const [isClosing, setIsClosing] = useState(false)
+    const [selected, setSelected] = useState('Dashboard')
+    const navigate = useNavigate()
 
     const handleDrawerClose = () => {
-        setOpen(false)
+        setIsClosing(true)
+        setMobileOpen(false)
     }
+
+    const handleDrawerTransitionEnd = () => {
+        setIsClosing(false)
+    }
+
+    const handleDrawerToggle = () => {
+        if (!isClosing) {
+            setMobileOpen(!mobileOpen)
+        }
+    }
+
+    const handleSelected = (text) => {
+        setSelected(text)
+    }
+    const handleLogout = () => {
+        navigate('/')
+    }
+
+    const icons = [
+        <HomeIcon color='inherit' />, <EventIcon color='inherit' />,
+        <AddIcCallIcon color='inherit' />, <DescriptionIcon color='inherit' />,
+        <WidgetsIcon color='inherit' />
+    ]
+
+    const drawer = (
+        <div>
+            <Toolbar sx={{ height: '10vh', pt: 10, pb: 3 }}>
+                <Box display={'flex'}>
+                    <Typography color={'primary'} fontWeight={'bold'} variant='h2' fontSize={{ xs: 20, md: 20 }}>Smart</Typography>
+                    <Typography color={'secondary'} fontWeight={'bold'} variant='h2' fontSize={{ xs: 20, md: 20 }}>MamaCare</Typography>
+                </Box>
+            </Toolbar>
+            <List>
+                {['Dashboard', 'Appointments', 'Consultations', 'Health Records', 'Educational Resources'].map((text, index) => (
+                    <ListItem key={text} disablePadding>
+                        <ListItemButton
+                            onClick={() => handleSelected(text)}
+                            sx={selected == text ? { backgroundColor: 'primary.main', color: 'white', ":hover": { backgroundColor: 'primary.dark' }, mx: 2 } : { mx: 2 }}>
+                            <ListItemIcon sx={selected == text && { color: 'white' }}>
+                                {icons[index]}
+                            </ListItemIcon>
+                            <ListItemText primary={text} />
+                        </ListItemButton>
+                    </ListItem>
+                ))}
+            </List>
+            <Divider />
+            <List>
+                <ListItem key={'Settings'} disablePadding>
+                    <ListItemButton
+                        onClick={() => handleSelected('Settings')}
+                        sx={selected == 'Settings' ? { backgroundColor: 'primary.main', color: 'white', ":hover": { backgroundColor: 'primary.dark' }, mx: 2 } : { mx: 2 }}>
+                        <ListItemIcon>
+                            <SettingsIcon sx={selected == 'Settings' && { color: 'white' }} />
+                        </ListItemIcon>
+                        <ListItemText primary={'Settings'} />
+                    </ListItemButton>
+                </ListItem>
+                <ListItem key={'Logout'} disablePadding>
+                    <ListItemButton
+                        onClick={handleLogout}
+                        sx={{ color: 'secondary.main', mx: 2 }} >
+                        <ListItemIcon>
+                            <ExitToAppIcon color='secondary' />
+                        </ListItemIcon>
+                        <ListItemText primary={'Logout'} />
+                    </ListItemButton>
+                </ListItem>
+            </List>
+            <Box display={'flex'} justifyContent={'center'} width={'100%'} mt={5}>
+                <Box
+                    component="img"
+                    sx={{ height: 150 }}
+                    alt="Mama"
+                    src={mama}
+                />
+            </Box>
+        </div>
+    )
 
     return (
         <Box sx={{ display: 'flex' }}>
             <CssBaseline />
-            <AppBar position="fixed" open={open} sx={{ backgroundColor: 'transparent', boxShadow: 'none' }}>
+            <AppBar
+                position="fixed"
+                sx={{
+                    width: { lg: `calc(100% - ${drawerWidth}px)` },
+                    ml: { lg: `${drawerWidth}px` },
+                    backgroundColor: 'transparent',
+                    boxShadow: 'none'
+                }}
+            >
                 <Toolbar sx={{ height: '10vh' }}>
                     <IconButton
                         color="inherit"
                         aria-label="open drawer"
-                        onClick={handleDrawerOpen}
                         edge="start"
-                        sx={{ mr: 2, ...(open && { display: 'none' }) }}
+                        onClick={handleDrawerToggle}
+                        sx={{ mr: 2, display: { lg: 'none' } }}
                     >
-                        <MenuIcon sx={{ color: 'gray' }} />
+                        <MenuIcon sx={{ color: 'black' }} />
                     </IconButton>
-                    <SearchBar />
+                    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} width={'100%'}>
+                        <SearchBar />
+                        <Stack direction={'row'} spacing={2} alignItems={'center'}>
+                            <Avatar sx={{ bgcolor: 'white' }}>
+                                <ContactSupportIcon sx={{ color: 'gray' }} />
+                            </Avatar>
+                            <Avatar sx={{ bgcolor: 'white' }}>
+                                <NotificationsIcon sx={{ color: 'gray' }} />
+                            </Avatar>
+                            <Avatar alt="User" src={user} sx={{height: 50, width: 50}} />
+                        </Stack>
+                    </Box>
                 </Toolbar>
             </AppBar>
-            <Drawer
-                sx={{
-                    width: drawerWidth,
-                    flexShrink: 0,
-                    '& .MuiDrawer-paper': {
-                        width: drawerWidth,
-                        boxSizing: 'border-box',
-                    },
-                }}
-                variant="persistent"
-                anchor="left"
-                open={open}
+            <Box
+                component="nav"
+                sx={{ width: { lg: drawerWidth }, flexShrink: { lg: 0 } }}
+                aria-label="mailbox folders"
             >
-                <DrawerHeader>
-                    <IconButton onClick={handleDrawerClose}>
-                        {theme.direction === 'ltr' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
-                    </IconButton>
-                </DrawerHeader>
-                <Divider />
-                <List>
-                    {['Dashboard', 'Appointments', 'Consultations', 'Health Records', 'Educational Resources'].map((text, index) => (
-                        <ListItem key={text} disablePadding>
-                            <ListItemButton>
-                                <ListItemIcon>
-                                    {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
-                                </ListItemIcon>
-                                <ListItemText primary={text} />
-                            </ListItemButton>
-                        </ListItem>
-                    ))}
-                </List>
-                <Divider />
-                <List>
-                    <ListItem key={'Settings'} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <InboxIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={'Settings'} />
-                        </ListItemButton>
-                    </ListItem>
-                    <ListItem key={'Logout'} disablePadding>
-                        <ListItemButton>
-                            <ListItemIcon>
-                                <MailIcon />
-                            </ListItemIcon>
-                            <ListItemText primary={'Logout'} />
-                        </ListItemButton>
-                    </ListItem>
-                </List>
-            </Drawer>
-            <Main open={open}>
-                <DrawerHeader />
+                <Drawer
+                    variant="temporary"
+                    open={mobileOpen}
+                    onTransitionEnd={handleDrawerTransitionEnd}
+                    onClose={handleDrawerClose}
+                    ModalProps={{
+                        keepMounted: true,
+                    }}
+                    sx={{
+                        display: { xs: 'block', lg: 'none' },
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                    }}
+                >
+                    {drawer}
+                </Drawer>
+                <Drawer
+                    variant="permanent"
+                    sx={{
+                        display: { xs: 'none', lg: 'block' },
+                        '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+                    }}
+                    open
+                >
+                    {drawer}
+                </Drawer>
+            </Box>
+            <Box
+                component="main"
+                sx={{ flexGrow: 1, p: 3, width: { lg: `calc(100% - ${drawerWidth}px)` } }}
+            >
+                <Toolbar />
                 {children}
-            </Main>
+            </Box>
         </Box>
     )
 }
 
+
 export default Navbar
+
