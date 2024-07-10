@@ -3,7 +3,7 @@ import React from 'react'
 
 function Title({text}) {
   return (
-    <Typography color={'secondary'} fontWeight={'bold'} fontSize={{xs: 18, lg:25}}>
+    <Typography color={'secondary'} fontWeight={'semibo9ld'} fontSize={{xs: 18, lg:20}}>
       {text}
     </Typography>
   )

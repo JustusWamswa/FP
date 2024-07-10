@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import AppBar from '@mui/material/AppBar'
 import Box from '@mui/material/Box'
 import CssBaseline from '@mui/material/CssBaseline'
@@ -20,12 +20,14 @@ import AddIcCallIcon from '@mui/icons-material/AddIcCall'
 import DescriptionIcon from '@mui/icons-material/Description'
 import WidgetsIcon from '@mui/icons-material/Widgets'
 import SettingsIcon from '@mui/icons-material/Settings'
-import { useNavigate } from 'react-router-dom'
-import { Avatar, Stack, Typography } from '@mui/material'
+import { useLocation, useNavigate } from 'react-router-dom'
+import { Avatar, Button, Modal, Stack, Typography } from '@mui/material'
 import mama from '../assets/eternal-bond-mothers-day-logo-cherished-connection-iconic-mother-child_706143-58681.avif'
 import user from '../assets/portrait-non-traditional-family-with-single-mother_23-2151295325.jpg'
 import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 import NotificationsIcon from '@mui/icons-material/Notifications'
+import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
+import Notifications from './modals/Notifications'
 
 const drawerWidth = 240
 
@@ -33,6 +35,13 @@ function Navbar({ children }) {
     const [mobileOpen, setMobileOpen] = useState(false)
     const [isClosing, setIsClosing] = useState(false)
     const [selected, setSelected] = useState('Dashboard')
+    const [open, setOpen] = useState(false)
+    const handleOpen = () => setOpen(true)
+    const handleClose = () => setOpen(false)
+    const [nOpen, setNOpen] = useState(false)
+    const handleNOpen = () => setNOpen(true)
+    const handleNClose = () => setNOpen(false)
+
     const navigate = useNavigate()
 
     const handleDrawerClose = () => {
@@ -52,16 +61,45 @@ function Navbar({ children }) {
 
     const handleSelected = (text) => {
         setSelected(text)
+        navigate(`/app/${text.toLowerCase().replace(' ', '')}`)
     }
     const handleLogout = () => {
         navigate('/')
     }
+
+    const location = useLocation()
+    const path = location.pathname
+    const items = path.split('/')
+    console.log(items)
+
+    const menuItems = ['Dashboard', 'Appointments', 'Consultations', 'Health Records', 'Educational Resources']
+
+    useEffect(() => {
+        for (let i = 0; i < menuItems.length; i++) {
+            if (items.includes((menuItems[i]).replace(" ", "").toLowerCase())) {
+                setSelected(menuItems[i])
+                return
+            }
+        }
+    }, [path])
+
 
     const icons = [
         <HomeIcon color='inherit' />, <EventIcon color='inherit' />,
         <AddIcCallIcon color='inherit' />, <DescriptionIcon color='inherit' />,
         <WidgetsIcon color='inherit' />
     ]
+
+    const style = {
+        position: 'absolute',
+        top: '50%',
+        left: '50%',
+        transform: 'translate(-50%, -50%)',
+        width: '30%',
+        bgcolor: 'background.paper',
+        boxShadow: 24,
+        p: 5,
+    }
 
     const drawer = (
         <div>
@@ -72,7 +110,7 @@ function Navbar({ children }) {
                 </Box>
             </Toolbar>
             <List>
-                {['Dashboard', 'Appointments', 'Consultations', 'Health Records', 'Educational Resources'].map((text, index) => (
+                {menuItems.map((text, index) => (
                     <ListItem key={text} disablePadding>
                         <ListItemButton
                             onClick={() => handleSelected(text)}
@@ -99,7 +137,7 @@ function Navbar({ children }) {
                 </ListItem>
                 <ListItem key={'Logout'} disablePadding>
                     <ListItemButton
-                        onClick={handleLogout}
+                        onClick={handleOpen}
                         sx={{ color: 'secondary.main', mx: 2 }} >
                         <ListItemIcon>
                             <ExitToAppIcon color='secondary' />
@@ -144,13 +182,13 @@ function Navbar({ children }) {
                     <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} width={'100%'}>
                         <SearchBar />
                         <Stack direction={'row'} spacing={2} alignItems={'center'}>
-                            <Avatar sx={{ bgcolor: 'white' }}>
+                            <Avatar sx={{ bgcolor: 'white', ":hover": { cursor: 'pointer' } }} onClick={() => navigate('/app/support')}>
                                 <ContactSupportIcon sx={{ color: 'gray' }} />
                             </Avatar>
-                            <Avatar sx={{ bgcolor: 'white' }}>
+                            <Avatar sx={{ bgcolor: 'white', ":hover": { cursor: 'pointer' } }} onClick={handleNOpen}>
                                 <NotificationsIcon sx={{ color: 'gray' }} />
                             </Avatar>
-                            <Avatar alt="User" src={user} sx={{height: 50, width: 50}} />
+                            <Avatar alt="User" src={user} sx={{ height: 50, width: 50 }} />
                         </Stack>
                     </Box>
                 </Toolbar>
@@ -193,6 +231,31 @@ function Navbar({ children }) {
                 <Toolbar />
                 {children}
             </Box>
+            <Modal
+                open={open}
+                onClose={handleClose}
+            >
+                <Box sx={style} >
+                    <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'}>
+                        <Typography fontSize={'1.2rem'} fontWeight={'bold'} color={'primary'}>
+                            Logout
+                        </Typography>
+                        <IconButton
+                            onClick={handleClose}
+                        >
+                            <CancelOutlinedIcon sx={{ color: 'secondary.main' }} />
+                        </IconButton>
+                    </Box>
+                    <Typography id="modal-modal-description" sx={{ mt: 2 }}>
+                        Log out of this system
+                    </Typography>
+                    <Box display={'flex'} justifyContent={'end'} alignItems={'center'} mt={3}>
+                        <Button variant='outlined' onClick={handleClose} sx={{ mr: 3, textTransform: 'capitalize' }} > Cancel </Button>
+                        <Button variant='contained' onClick={handleLogout} sx={{ textTransform: 'capitalize' }} > Confirm </Button>
+                    </Box>
+                </Box>
+            </Modal>
+            <Notifications handleClose={handleNClose} open={nOpen} />
         </Box>
     )
 }

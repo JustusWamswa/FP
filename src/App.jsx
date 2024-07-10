@@ -9,6 +9,11 @@ import ForgotPassword from './pages/forgotPassword'
 import ResetPassword from './pages/resetPassword'
 import Dashboard from './pages/dashboard'
 import Layout from './components/Layout'
+import Support from './pages/support'
+import Settings from './pages/settings'
+import Appointments from './pages/appointments'
+import Consultations from './pages/consultations'
+import HealthRecords from './pages/healthRecords'
 
 
 const myTheme = createTheme({
@@ -41,6 +46,11 @@ function App() {
             <Route path='/forgotpassword' element={<ForgotPassword />} />
             <Route path='/resetpassword' element={<ResetPassword />} />
             <Route path='/app/dashboard' element={<Dashboard />} />
+            <Route path='/app/support' element={<Support />} />
+            <Route path='/app/settings' element={<Settings />} />
+            <Route path='/app/appointments' element={<Appointments />} />
+            <Route path='/app/consultations' element={<Consultations />} />
+            <Route path='/app/healthRecords' element={<HealthRecords />} />
           </Routes>
         </GoogleOAuthProvider>
       </Layout>
