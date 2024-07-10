@@ -14,6 +14,8 @@ import Settings from './pages/settings'
 import Appointments from './pages/appointments'
 import Consultations from './pages/consultations'
 import HealthRecords from './pages/healthRecords'
+import EducationalResources from './pages/educationalResources'
+import SingleEducationalResource from './pages/singleEducationalResource'
 
 
 const myTheme = createTheme({
@@ -51,6 +53,8 @@ function App() {
             <Route path='/app/appointments' element={<Appointments />} />
             <Route path='/app/consultations' element={<Consultations />} />
             <Route path='/app/healthRecords' element={<HealthRecords />} />
+            <Route path='/app/educationalResources' element={<EducationalResources />} />
+            <Route path='/app/educationalResources/:id' element={<SingleEducationalResource />} />
           </Routes>
         </GoogleOAuthProvider>
       </Layout>

@@ -70,7 +70,6 @@ function Navbar({ children }) {
     const location = useLocation()
     const path = location.pathname
     const items = path.split('/')
-    console.log(items)
 
     const menuItems = ['Dashboard', 'Appointments', 'Consultations', 'Health Records', 'Educational Resources']
 
