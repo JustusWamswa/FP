@@ -16,6 +16,7 @@ import Consultations from './pages/consultations'
 import HealthRecords from './pages/healthRecords'
 import EducationalResources from './pages/educationalResources'
 import SingleEducationalResource from './pages/singleEducationalResource'
+import Landing from './pages/landing'
 
 
 const myTheme = createTheme({
@@ -37,12 +38,14 @@ const myTheme = createTheme({
 })
 
 function App() {
+
   return (
     <ThemeProvider theme={myTheme}>
       <Layout>
         <GoogleOAuthProvider clientId="<your_client_id>">
           <Routes>
-            <Route path='/' element={<Home />} />
+            <Route path='/' element={<Landing />} />
+            <Route path='/home' element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />
             <Route path='/forgotpassword' element={<ForgotPassword />} />
