@@ -1,19 +1,31 @@
-import React from 'react'
+import React, { useState } from 'react'
 import Card from '@mui/material/Card'
 import CardContent from '@mui/material/CardContent'
 import CardMedia from '@mui/material/CardMedia'
 import Typography from '@mui/material/Typography'
 import food from '../assets/food.jpg'
 import user from '../assets/portrait-non-traditional-family-with-single-mother_23-2151295325.jpg'
-import { Avatar, Box, Button, Stack } from '@mui/material'
-import { useNavigate } from 'react-router-dom'
+import { Avatar, Box, Button, IconButton, Stack } from '@mui/material'
+import { useLocation, useNavigate } from 'react-router-dom'
+import DeleteIcon from '@mui/icons-material/Delete'
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline'
+import EditResource from './modals/EditResource'
+import DeleteResource from './modals/DeleteResource'
 
 
 function ResourceCard() {
 
+    const [editOpen, setEditOpen] = useState(false)
+    const handleEditOpen = () => setEditOpen(true)
+    const handleEditClose = () => setEditOpen(false)
+    const [deleteOpen, setDeleteOpen] = useState(false)
+    const handleDeleteOpen = () => setDeleteOpen(true)
+    const handleDeleteClose = () => setDeleteOpen(false)
     const navigate = useNavigate()
+    const location = useLocation()
 
     return (
+        <>
         <Card>
             <Box sx={{ position: 'relative' }}>
                 <CardMedia
@@ -46,9 +58,21 @@ function ResourceCard() {
                 </Box>
             </Box>
             <CardContent>
-                <Typography gutterBottom variant="h6" component="div">
-                    Nutrition
-                </Typography>
+                <Box display={'flex'} justifyContent={'space-between'}>
+                    <Typography gutterBottom variant="h6" component="div">
+                        Nutrition
+                    </Typography>
+                    {location.pathname.includes('/admin/') &&
+                        <Box>
+                            <IconButton sx={{ width: 40, height: 40 }} onClick={handleEditOpen} >
+                                <DriveFileRenameOutlineIcon sx={{ color: 'primary.main' }} />
+                            </IconButton>
+                            <IconButton sx={{ width: 40, height: 40 }} onClick={handleDeleteOpen} >
+                                <DeleteIcon sx={{ color: 'secondary.main' }} />
+                            </IconButton>
+                        </Box>
+                    }
+                </Box>
                 <Typography gutterBottom variant="body2" color="text.secondary">
                     LDonec sed vestibulum libero. Pellentesque a mauris convallis,
                     laoreet velit eget, pulvinar lacus. Pellentesque ipsum arcu,
@@ -68,6 +92,9 @@ function ResourceCard() {
                 </Stack>
             </CardContent>
         </Card>
+        <EditResource handleClose={handleEditClose} open={editOpen} />
+        <DeleteResource handleClose={handleDeleteClose} open={deleteOpen} />
+        </>
     )
 }
 

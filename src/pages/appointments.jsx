@@ -92,7 +92,7 @@ function Appointments() {
     }
 
     return (
-        <div>
+        <>
             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} mb={3}>
                 <Title text={'Appointments'} />
                 <Button variant='contained' onClick={handleAppOpen} sx={{ px: 8, textTransform: 'capitalize' }} > Add Appointment </Button>
@@ -182,7 +182,7 @@ function Appointments() {
             <AddAppointment handleClose={handleAppClose} open={appOpen} />
             <RescheduleAppointment handleClose={handleCloseRes} open={openRes} />
             <CancelAppointment handleClose={handleCloseCancel} open={openCancel} />
-        </div>
+        </>
     )
 }
 
