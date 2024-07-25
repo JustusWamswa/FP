@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { Route, Routes } from 'react-router-dom'
 import { createTheme, ThemeProvider } from "@mui/material/styles"
 import Home from './pages/home'
@@ -20,6 +20,8 @@ import Landing from './pages/landing'
 import AdminDashboard from './pages/adminDashboard'
 import AdminUsers from './pages/adminUsers'
 import AdminResources from './pages/adminResources'
+import PageNotFound from './pages/pageNotFound'
+import { useUser } from '@clerk/clerk-react'
 
 
 const myTheme = createTheme({
@@ -42,12 +44,18 @@ const myTheme = createTheme({
 
 function App() {
 
+  const {user} = useUser()
+  useEffect(() => {
+    localStorage.setItem("userId", user?.id)
+  }, [user])
+  
   return (
     <ThemeProvider theme={myTheme}>
       <Layout>
         <GoogleOAuthProvider clientId="<your_client_id>">
           <Routes>
             <Route path='/' element={<Landing />} />
+            <Route path='*' element={<PageNotFound />} />
             <Route path='/home' element={<Home />} />
             <Route path='/login' element={<Login />} />
             <Route path='/signup' element={<Signup />} />

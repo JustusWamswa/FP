@@ -4,35 +4,37 @@ import AttachFileIcon from '@mui/icons-material/AttachFile'
 import SendRoundedIcon from '@mui/icons-material/SendRounded'
 
 const MessageInput = ({ onSendMessage }) => {
-    const [text, setText] = useState('')
+    const [input, setInput] = useState('')
 
-    const handleSend = () => {
-        if (text.trim() !== '') {
-            onSendMessage(text)
-            setText('')
+    const handleSendClick = () => {
+        if (input.trim()) {
+            onSendMessage(input)
+            setInput('')
         }
     }
 
     return (
-        <Box
-            sx={{
-                display: 'flex',
-                padding: '16px',
-                alignItems: 'center'
-            }}
-        >
+        <Box display="flex" alignItems="center" p={1} borderTop="1px solid #ddd">
             <TextField
-                value={text}
-                onChange={(e) => setText(e.target.value)}
                 variant="outlined"
                 placeholder="Type a message"
                 fullWidth
-                sx={{ marginRight: '8px' }}
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                onKeyPress={(e) => {
+                    if (e.key === 'Enter') {
+                        handleSendClick()
+                    }
+                }}
+                sx={{ marginRight: 1 }}
             />
-            <IconButton sx={{width: 40, height: 40}}>
+            {/* <Button variant="contained" color="primary" onClick={handleSendClick}>
+        Send
+      </Button> */}
+            <IconButton sx={{ width: 40, height: 40 }}>
                 <AttachFileIcon />
             </IconButton>
-            <IconButton sx={{width: 40, height: 40}} onClick={handleSend}>
+            <IconButton sx={{ width: 40, height: 40 }} onClick={handleSendClick}>
                 <SendRoundedIcon />
             </IconButton>
         </Box>

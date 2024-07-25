@@ -28,6 +28,7 @@ import ContactSupportIcon from '@mui/icons-material/ContactSupport'
 import NotificationsIcon from '@mui/icons-material/Notifications'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 import Notifications from './modals/Notifications'
+import { SignOutButton, UserButton } from '@clerk/clerk-react'
 
 const drawerWidth = 240
 
@@ -187,7 +188,8 @@ function Navbar({ children }) {
                             <Avatar sx={{ bgcolor: 'white', ":hover": { cursor: 'pointer' } }} onClick={handleNOpen}>
                                 <NotificationsIcon sx={{ color: 'gray' }} />
                             </Avatar>
-                            <Avatar alt="User" src={user} sx={{ height: 50, width: 50 }} />
+                            {/* <Avatar alt="User" src={user} sx={{ height: 50, width: 50 }} /> */}
+                            <UserButton appearance={{elements: {userButtonAvatarBox: {width: 40, height: 40 }}}} />
                         </Stack>
                     </Box>
                 </Toolbar>
@@ -250,7 +252,9 @@ function Navbar({ children }) {
                     </Typography>
                     <Box display={'flex'} justifyContent={'end'} alignItems={'center'} mt={3}>
                         <Button variant='outlined' onClick={handleClose} sx={{ mr: 3, textTransform: 'capitalize' }} > Cancel </Button>
-                        <Button variant='contained' onClick={handleLogout} sx={{ textTransform: 'capitalize' }} > Confirm </Button>
+                        <SignOutButton signOutOptions={{redirectUrl: '/'}} >
+                            <Button variant='contained' sx={{ textTransform: 'capitalize' }} > Confirm </Button>
+                        </SignOutButton>
                     </Box>
                 </Box>
             </Modal>

@@ -8,8 +8,15 @@ import NoteAddIcon from '@mui/icons-material/NoteAdd';
 
 
 
-function EditHealthRecord({ handleClose, open }) {
+function EditHealthRecord({ handleClose, open, setRecordDetails, recordDetails, modifyRecord }) {
 
+    const handleChange = (e) => {
+        const { name, value } = e.target
+        setRecordDetails(prevDetails => ({
+            ...prevDetails,
+            [name]: value
+        }))
+    }
     const style = {
         position: 'absolute',
         top: '50%',
@@ -57,31 +64,61 @@ function EditHealthRecord({ handleClose, open }) {
                     <Stack direction={'row'} justifyContent={'space-between'}>
                         <Box width={'45%'}>
                             <Typography mt={3} mb={1}>Record ID</Typography>
-                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text'
+                            disabled
+                            value={recordDetails?._id}
+                            name='id'
+                            // onChange={handleChange}
+                             />
                             <Typography mt={3} mb={1}>Date of Record</Typography>
-                            <LocalizationProvider dateAdapter={AdapterDayjs} >
-                                <DemoContainer components={['DatePicker']}>
-                                    <DatePicker label="" sx={{ width: '100%' }} slotProps={{ textField: { size: 'small' } }} />
-                                </DemoContainer>
-                            </LocalizationProvider>
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' type='date'
+                                value={recordDetails?.date}
+                                name='date'
+                                onChange={handleChange}
+                            />
                             <Typography mt={3} mb={1}>Diagnosis</Typography>
-                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text'
+                            value={recordDetails?.diagnosis}
+                            name='diagnosis'
+                            onChange={handleChange}
+                             />
                         </Box>
                         <Box width={'45%'}>
                             <Typography mt={3} mb={1}>Healthcare Provider</Typography>
-                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' 
+                            value={recordDetails?.healthcareProvider}
+                            name='healthcareProvider'
+                            onChange={handleChange}
+                            />
                             <Typography mt={3} mb={1}>Type of Record</Typography>
-                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' 
+                            value={recordDetails?.type}
+                            name='type'
+                            onChange={handleChange}
+                            />
                             <Typography mt={3} mb={1}>Follow-Up Appointments</Typography>
-                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                            <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text'  disabled
+                            />
                         </Box>
                     </Stack>
                     <Typography mt={3} mb={1}>Tests Conducted</Typography>
-                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' 
+                    value={recordDetails?.testsConducted}
+                    name='testsConducted'
+                    onChange={handleChange}
+                    />
                     <Typography mt={3} mb={1}>Results</Typography>
-                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' 
+                    value={recordDetails?.results}
+                    name='results'
+                    onChange={handleChange}
+                    />
                     <Typography mt={3} mb={1}>Treatment Plan</Typography>
-                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' />
+                    <TextField id="outlined-basic" label="" variant="outlined" size='small' fullWidth placeholder='Enter text' 
+                    value={recordDetails?.treatmentPlan}
+                    name='treatmentPlan'
+                    onChange={handleChange}
+                    />
                     <Typography fontSize={'1.2rem'} fontWeight={'bold'} mt={4} >Attach an image</Typography>
                     <Box border={'1px dashed lightblue'} borderRadius={3} height={'20vh'} bgcolor={'white'} display={'flex'} justifyContent={'space-evenly'} alignItems={'center'} mt={2}>
                         <Box display={'flex'} alignItems={'center'}>
@@ -90,12 +127,15 @@ function EditHealthRecord({ handleClose, open }) {
                         </Box>
                         <Button variant='outlined' sx={{ width: '30%', textTransform: 'capitalize' }} tabIndex={-1} component="label">
                             Browse File
-                            <VisuallyHiddenInput type="file" />
+                            <input hidden type="file"
+                             name='recordFile'
+                            //  onChange={handleFileChange}
+                             />
                         </Button>
                     </Box>
                     <Box display={'flex'} justifyContent={'end'} alignItems={'center'} mt={3}>
                         <Button variant='outlined' sx={{ px: 8, textTransform: 'capitalize', mr: 3 }} onClick={handleClose} > Cancel </Button>
-                        <Button variant='contained' sx={{ px: 8, textTransform: 'capitalize' }} > Confirm </Button>
+                        <Button variant='contained' sx={{ px: 8, textTransform: 'capitalize' }} onClick={() => modifyRecord({...recordDetails})}> Confirm </Button>
                     </Box>
                 </Box>
             </Box>

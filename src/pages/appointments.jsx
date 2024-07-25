@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import Title from '../components/Title'
-import { Box, Button, IconButton, InputBase, Paper, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, Typography } from '@mui/material'
+import { Alert, Box, Button, IconButton, InputBase, LinearProgress, Paper, Stack, Tab, Table, TableBody, TableCell, TableContainer, TableHead, TablePagination, TableRow, Tabs, TextField, Typography } from '@mui/material'
 import DisabledByDefaultRoundedIcon from '@mui/icons-material/DisabledByDefaultRounded'
 import PropTypes from 'prop-types'
 import SearchIcon from '@mui/icons-material/Search'
@@ -10,7 +10,17 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import AddAppointment from '../components/modals/AddAppointment'
 import CancelAppointment from '../components/modals/CancelAppointment'
 import RescheduleAppointment from '../components/modals/RescheduleAppointment'
+import { createAppointment, deleteAppointment, getAppointments, updateAppointment } from '../services/api'
 
+export function formatDate(isoString) {
+    const date = new Date(isoString)
+
+    const day = String(date.getDate()).padStart(2, '0')
+    const month = String(date.getMonth() + 1).padStart(2, '0') // Months are zero-indexed
+    const year = date.getFullYear()
+
+    return `${day}/${month}/${year}`
+}
 
 function Appointments() {
 
@@ -18,15 +28,129 @@ function Appointments() {
     const [rowsPerPage, setRowsPerPage] = useState(20)
     const [value, setValue] = useState(0)
     const [appOpen, setAppOpen] = useState(false)
-    const handleAppOpen = () => setAppOpen(true)
+    const handleAppOpen = () => {
+        setAppOpen(true)
+        setAppointmentDetails([])
+    }
     const handleAppClose = () => setAppOpen(false)
     const [openCancel, setOpenCancel] = useState(false)
-    const handleOpenCancel = () => setOpenCancel(true)
+    const handleOpenCancel = (row) => {
+        setOpenCancel(true)
+        setAppointmentDetails(row)
+    }
     const handleCloseCancel = () => setOpenCancel(false)
     const [openRes, setOpenRes] = useState(false)
-    const handleOpenRes = () => setOpenRes(true)
+    const handleOpenRes = (row) => {
+        setOpenRes(true)
+        setAppointmentDetails(row)
+    }
     const handleCloseRes = () => setOpenRes(false)
+    const [searchQuery, setSearchQuery] = useState('')
+    const [filterDate, setFilterDate] = useState('')
+    const [loading, setLoading] = useState(false)
+    const [fail, setFail] = useState(false)
+    const [success, setSuccess] = useState(false)
+    const [appointments, setAppointments] = useState([])
+    const [appointmentDetails, setAppointmentDetails] = useState(
+        {
+            appointmentTitle: "",
+            date: "",
+            time: "",
+            location: "",
+            healthcareProvider: "",
+            appointmentType: "",
+            note: ""
+        }
+    )
+    const fetchAppointments = () => {
+        setLoading(true)
+        getAppointments()
+            .then((res) => {
+                setAppointments(res.data)
+                setLoading(false)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+                setFail(true)
+                setTimeout(() => {
+                    setFail(false)
+                }, 5000)
+            })
+    }
 
+    useEffect(() => {
+        fetchAppointments()
+    }, [])
+
+    const addAppointment = (appointmentDetails) => {
+        setLoading(true)
+        createAppointment(appointmentDetails)
+            .then((res) => {
+                setLoading(false)
+                handleAppClose()
+                fetchAppointments()
+                setSuccess(true)
+                setTimeout(() => {
+                    setSuccess(false)
+                }, 5000)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+                setFail(true)
+                setTimeout(() => {
+                    setFail(false)
+                }, 5000)
+            })
+    }
+    const modifyAppointment = (appointmentDetails) => {
+        const id = appointmentDetails?._id
+        delete appointmentDetails?._id
+        delete appointmentDetails?.__v
+        delete appointmentDetails?.userId
+        setLoading(true)
+        updateAppointment(id, appointmentDetails)
+            .then((res) => {
+                setLoading(false)
+                handleCloseRes()
+                fetchAppointments()
+                setSuccess(true)
+                setTimeout(() => {
+                    setSuccess(false)
+                }, 5000)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+                setFail(true)
+                setTimeout(() => {
+                    setFail(false)
+                }, 5000)
+            })
+    }
+
+    const cancelAppointment = () => {
+        setLoading(true)
+        deleteAppointment(appointmentDetails?._id)
+            .then((res) => {
+                setLoading(false)
+                handleCloseCancel()
+                fetchAppointments()
+                setSuccess(true)
+                setTimeout(() => {
+                    setSuccess(false)
+                }, 5000)
+            })
+            .catch((err) => {
+                console.log(err)
+                setLoading(false)
+                setFail(true)
+                setTimeout(() => {
+                    setFail(false)
+                }, 5000)
+            })
+    }
     const handleChange = (event, newValue) => {
         setValue(newValue)
     }
@@ -40,27 +164,41 @@ function Appointments() {
         setPage(0)
     }
 
-    const rows = []
-    for (let i = 0; i < 25; i++) {
-        rows.push(<TableRow
-            key={i}
-            sx={{ bgcolor: '#f7faff', borderRadius: 3 }}
-        >
-            <TableCell sx={{ borderBottom: 'white 6px solid' }} >Parental Checkup</TableCell>
-            <TableCell sx={{ borderBottom: 'white 6px solid' }}>06/10/2024</TableCell>
-            <TableCell sx={{ borderBottom: 'white 6px solid' }}>10:00 am</TableCell>
-            <TableCell sx={{ borderBottom: 'white 6px solid' }}>Elizabeth Polson</TableCell>
-            <TableCell sx={{ borderBottom: 'white 6px solid' }}>City Hospital, Room 305</TableCell>
-            <TableCell sx={{ display: 'flex', alignItems: 'center', borderBottom: 'white 6px solid' }} >
-                <Typography mr={2} color={'primary'} sx={{ cursor: 'pointer', ":hover": { textDecoration: 'underline' } }} onClick={handleOpenRes}>
-                    Reschedule
-                </Typography>
-                <IconButton onClick={handleOpenCancel} >
-                    <DisabledByDefaultRoundedIcon sx={{ color: 'secondary.main' }} />
-                </IconButton>
-            </TableCell>
-        </TableRow>)
+    const handleSearchChange = (event) => {
+        setSearchQuery(event.target.value)
     }
+
+    const handleDateFilterChange = (event) => {
+        setFilterDate(event.target.value)
+    }
+
+    const filteredAppointments = appointments.filter((appointment) => {
+        const matchesSearchQuery = appointment?.appointmentTitle.toLowerCase().includes(searchQuery.toLowerCase())
+        const matchesDateFilter = filterDate ? formatDate(appointment?.date) === formatDate(filterDate) : true
+        return matchesSearchQuery && matchesDateFilter
+    })
+
+    // const rows = []
+    // for (let i = 0; i < 25; i++) {
+    //     rows.push(<TableRow
+    //         key={i}
+    //         sx={{ bgcolor: '#f7faff', borderRadius: 3 }}
+    //     >
+    //         <TableCell sx={{ borderBottom: 'white 6px solid' }} >Parental Checkup</TableCell>
+    //         <TableCell sx={{ borderBottom: 'white 6px solid' }}>06/10/2024</TableCell>
+    //         <TableCell sx={{ borderBottom: 'white 6px solid' }}>10:00 am</TableCell>
+    //         <TableCell sx={{ borderBottom: 'white 6px solid' }}>Elizabeth Polson</TableCell>
+    //         <TableCell sx={{ borderBottom: 'white 6px solid' }}>City Hospital, Room 305</TableCell>
+    //         <TableCell sx={{ display: 'flex', alignItems: 'center', borderBottom: 'white 6px solid' }} >
+    //             <Typography mr={2} color={'primary'} sx={{ cursor: 'pointer', ":hover": { textDecoration: 'underline' } }} onClick={handleOpenRes}>
+    //                 Reschedule
+    //             </Typography>
+    //             <IconButton onClick={handleOpenCancel} >
+    //                 <DisabledByDefaultRoundedIcon sx={{ color: 'secondary.main' }} />
+    //             </IconButton>
+    //         </TableCell>
+    //     </TableRow>)
+    // }
 
     function CustomTabPanel(props) {
         const { children, value, index, ...other } = props
@@ -93,6 +231,10 @@ function Appointments() {
 
     return (
         <>
+            {loading && <LinearProgress />}
+            {fail ? <Alert severity="error" sx={{ position: 'absolute', right: 0, bottom: 10, zIndex: 50, minWidth: "20%" }}>Failed</Alert>
+                : success ? <Alert severity="success" sx={{ position: 'absolute', right: 0, bottom: 10, zIndex: 50, minWidth: "20%" }}>Success</Alert>
+                    : <></>}
             <Box display={'flex'} justifyContent={'space-between'} alignItems={'center'} mb={3}>
                 <Title text={'Appointments'} />
                 <Button variant='contained' onClick={handleAppOpen} sx={{ px: 8, textTransform: 'capitalize' }} > Add Appointment </Button>
@@ -117,13 +259,14 @@ function Appointments() {
                                 sx={{ ml: 1, flex: 1 }}
                                 placeholder="Search..."
                                 inputProps={{ 'aria-label': 'search' }}
+                                value={searchQuery}
+                                onChange={handleSearchChange}
                             />
                         </Paper>
-                        <LocalizationProvider dateAdapter={AdapterDayjs} >
-                            <DemoContainer components={['DatePicker']}>
-                                <DatePicker label="Filter by Date" slotProps={{ textField: { size: 'small' } }} />
-                            </DemoContainer>
-                        </LocalizationProvider>
+                        <TextField id="outlined-basic" label="" variant="outlined" size='small' placeholder='Filter by date' type='date'
+                            value={filterDate}
+                            onChange={handleDateFilterChange}
+                        />
                     </Stack>
                     <CustomTabPanel value={value} index={0}>
                         <Box sx={{ maxHeight: '60vh', overflowY: 'scroll' }} >
@@ -139,9 +282,28 @@ function Appointments() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows
+                                    {filteredAppointments
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => (row))}
+                                        .map((row) => (
+                                            <TableRow
+                                                key={row?._id}
+                                                sx={{ bgcolor: '#f7faff', borderRadius: 3 }}
+                                            >
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }} >{row?.appointmentTitle}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{formatDate(row?.date)}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.time}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.healthcareProvider}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.location}</TableCell>
+                                                <TableCell sx={{ display: 'flex', alignItems: 'center', borderBottom: 'white 6px solid' }} >
+                                                    <Typography mr={2} color={'primary'} sx={{ cursor: 'pointer', ":hover": { textDecoration: 'underline' } }} onClick={() => handleOpenRes(row)}>
+                                                        Reschedule
+                                                    </Typography>
+                                                    <IconButton onClick={() => handleOpenCancel(row)} >
+                                                        <DisabledByDefaultRoundedIcon sx={{ color: 'secondary.main' }} />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
                         </Box>
@@ -160,9 +322,31 @@ function Appointments() {
                                     </TableRow>
                                 </TableHead>
                                 <TableBody>
-                                    {rows
+                                    {/* {rows
                                         .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
-                                        .map((row) => (row))}
+                                        .map((row) => (row))} */}
+                                    {filteredAppointments
+                                        .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                        .map((row) => (
+                                            <TableRow
+                                                key={row?._id}
+                                                sx={{ bgcolor: '#f7faff', borderRadius: 3 }}
+                                            >
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }} >{row?.appointmentTitle}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{formatDate(row?.date)}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.time}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.healthcareProvider}</TableCell>
+                                                <TableCell sx={{ borderBottom: 'white 6px solid' }}>{row?.location}</TableCell>
+                                                <TableCell sx={{ display: 'flex', alignItems: 'center', borderBottom: 'white 6px solid' }} >
+                                                    <Typography mr={2} color={'primary'} sx={{ cursor: 'pointer', ":hover": { textDecoration: 'underline' } }} onClick={() => handleOpenRes(row)}>
+                                                        Reschedule
+                                                    </Typography>
+                                                    <IconButton onClick={() => handleOpenCancel(row)} >
+                                                        <DisabledByDefaultRoundedIcon sx={{ color: 'secondary.main' }} />
+                                                    </IconButton>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
                                 </TableBody>
                             </Table>
                         </Box>
@@ -172,16 +356,17 @@ function Appointments() {
                 <TablePagination
                     rowsPerPageOptions={[5, 10, 20, 25, 50, 100]}
                     component="div"
-                    count={rows.length}
+                    count={appointments.length}
+                    // count={rows.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 />
             </TableContainer>
-            <AddAppointment handleClose={handleAppClose} open={appOpen} />
-            <RescheduleAppointment handleClose={handleCloseRes} open={openRes} />
-            <CancelAppointment handleClose={handleCloseCancel} open={openCancel} />
+            <AddAppointment handleClose={handleAppClose} open={appOpen} setAppointmentDetails={setAppointmentDetails} appointmentDetails={appointmentDetails} addAppointment={addAppointment} />
+            <RescheduleAppointment handleClose={handleCloseRes} open={openRes} setAppointmentDetails={setAppointmentDetails} appointmentDetails={appointmentDetails} modifyAppointment={modifyAppointment} />
+            <CancelAppointment handleClose={handleCloseCancel} open={openCancel} cancelAppointment={cancelAppointment} />
         </>
     )
 }

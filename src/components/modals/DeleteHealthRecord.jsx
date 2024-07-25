@@ -2,7 +2,7 @@ import { Box, Button, IconButton, Modal, Typography } from '@mui/material'
 import React from 'react'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 
-function DeleteHealthRecord({ handleClose, open }) {
+function DeleteHealthRecord({ handleClose, open, clearRecord }) {
 
     const style = {
         position: 'absolute',
@@ -36,7 +36,7 @@ function DeleteHealthRecord({ handleClose, open }) {
                 </Typography>
                 <Box display={'flex'} justifyContent={'end'} alignItems={'center'} mt={3}>
                     <Button variant='outlined' onClick={handleClose} sx={{ mr: 3, textTransform: 'capitalize' }} > Cancel </Button>
-                    <Button variant='contained' sx={{ textTransform: 'capitalize' }} > Confirm </Button>
+                    <Button variant='contained' sx={{ textTransform: 'capitalize' }} onClick={() => clearRecord()}> Confirm </Button>
                 </Box>
             </Box>
         </Modal>

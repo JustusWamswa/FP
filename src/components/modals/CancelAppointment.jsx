@@ -2,7 +2,7 @@ import { Box, Button, IconButton, Modal, Typography } from '@mui/material'
 import React from 'react'
 import CancelOutlinedIcon from '@mui/icons-material/CancelOutlined'
 
-function CancelAppointment({ handleClose, open }) {
+function CancelAppointment({ handleClose, open, cancelAppointment }) {
 
     const style = {
         position: 'absolute',
@@ -35,8 +35,8 @@ function CancelAppointment({ handleClose, open }) {
                     Are you sure you want to delete this appointment?
                 </Typography>
                 <Box display={'flex'} justifyContent={'end'} alignItems={'center'} mt={3}>
-                    <Button variant='outlined' onClick={handleClose} sx={{ mr: 3, textTransform: 'capitalize' }} > Cancel </Button>
-                    <Button variant='contained' sx={{ textTransform: 'capitalize' }} > Confirm </Button>
+                    <Button variant='outlined' onClick={handleClose} sx={{ mr: 3, textTransform: 'capitalize' }}> Cancel </Button>
+                    <Button variant='contained' sx={{ textTransform: 'capitalize' }} onClick={() => cancelAppointment()}> Confirm </Button>
                 </Box>
             </Box>
         </Modal>
